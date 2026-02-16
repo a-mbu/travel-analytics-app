@@ -24,7 +24,7 @@ dmypy.json
 *.sqlite3
 
 # Docker
-.dockerignore
+#.dockerignore
 Dockerfile
 docker-compose.yml
 
@@ -52,6 +52,8 @@ terraform/terraform.tfstate.backup
 # Kubernetes
 k8s/.kubeconfig
 kubeconfig
+minikube-binary/
+
 
 # Ansible
 *.retry

@@ -19,9 +19,10 @@ app = Flask(__name__)
 # Configure SQlite database - Working Config
 basedir = os.path.abspath(os.path.dirname(__file__))
 # FIX: Changed URL to URI and added the missing 'S' to MODIFICATIONS
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    basedir, "travel.db"
-)
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////" + os.path.join(
+#    basedir, "travel.db"
+# )
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/travel.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize SQlAlchemy
@@ -178,13 +179,15 @@ def get_flights():
     origin = request.args.get("origin")
     destination = request.args.get("destination")
     airline = request.args.get("airline")
+    print(airline)
 
     if origin:
         query = query.filter(Flight.origin == origin.upper())
     if destination:
         query = query.filter(Flight.destination == destination.upper())
     if airline:
-        query = query.filter(Flight.airline.ilike(f"%{airline}"))
+        print(airline)
+        query = query.filter(Flight.airline.ilike(f"%{airline}%"))
 
     # Exec query and conver to dict
 
@@ -194,7 +197,7 @@ def get_flights():
     )
 
 
-@app.route("/api/v1/flights/<int:flight_id>", method=["GET"])
+@app.route("/api/v1/flights/<int:flight_id>", methods=["GET"])
 def get_light(flight_id):
     """
     GET /api/v1/flight/{id}

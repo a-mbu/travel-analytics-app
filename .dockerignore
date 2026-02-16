@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+.env
+.git
+.gitignore
+README.md
+terraform/
+ansible/
+k8s/
+dbt/target/
+dbt/logs/
+*.db
+.DS_Store
