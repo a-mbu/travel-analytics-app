@@ -1,0 +1,74 @@
+# Travel Analytics - WORKING KUBERNETES DEPLOYMENT
+# Deploy to minikube: kubectl apply -f k8s/
+# Test locally: minikube service travel-api-service
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travel-api-deployment
+  labels:
+    app: travel-analytics
+    stage: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travel-analytics
+  template:
+    metadata:
+      labels:
+        app: travel-analytics
+    spec:
+      containers:
+        - name: travel-api
+          # Use local image for development
+          image: travel-analytics:latest
+          imagePullPolicy: Never # Use local image, don't pull from registry
+          ports:
+            - containerPort: 5000
+              name: http
+          env:
+            - name: FLASK_ENV
+              value: "production"
+            - name: DATABASE_URL
+              value: "sqlite:///app/data/travel.db"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          volumeMounts:
+            - name: app-data
+              mountPath: /app/data
+      volumes:
+        - name: app-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: travel-api-service
+spec:
+  type: NodePort # Accessible from outside cluster
+  selector:
+    app: travel-analytics
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 30080 # Fixed port for local development
+      name: http
