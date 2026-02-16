@@ -1,0 +1,22 @@
+# Travel Analytics - dbt Profiles
+# Place in ~/.dbt/profiles.yml
+# Test: dbt debug --profiles-dir .
+
+travel_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb # Lightweight for local development
+      path: "{{ env_var('DBT_DUCKDB_PATH', '../travel.db') }}"
+      schema: main
+
+    # Stage 2: PostgreSQL configuration
+    postgres_dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: "{{ env_var('DBT_USER', 'travel') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'travel123') }}"
+      dbname: traveldb
+      schema: analytics
+      threads: 4

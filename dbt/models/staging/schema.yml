@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: travel_api
+    schema: main
+    tables:
+      - name: flights
+        description: "Raw flight data from API"
+      - name: weather_cache
+        description: "Cached weather data"
+
+models:
+  - name: stg_flights
+    description: "Staged flight data with cleaned types"
+    columns:
+      - name: flight_id
+        tests:
+          - unique
+          - not_null
+      - name: flight_number
+      - name: origin
+      - name: destination
+      - name: status
+
+  - name: stg_weather
+    description: "Staged weather observations"
+    columns:
+      - name: city
+      - name: temperature
+      - name: conditions
